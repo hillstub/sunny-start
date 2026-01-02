@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sunny-start-v2';
+const CACHE_NAME = 'sunny-start-v3';
 const ASSETS = [
     './',
     './index.html',
@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
     );
-    self.skipWaiting();
+    self.skipWaiting(); // Force update
 });
 
 self.addEventListener('activate', (event) => {
@@ -23,9 +23,11 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    self.clients.claim(); // Take control immediately
 });
 
 self.addEventListener('fetch', (event) => {
+    // Network-first strategy for main assets, cache-fallback for offline
     event.respondWith(
         fetch(event.request).catch(() => caches.match(event.request))
     );

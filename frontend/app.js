@@ -31,6 +31,7 @@ const REWARDS = [
 
 // Initialization
 async function init() {
+    console.log("☀️ Sunny Start: v1.3 - Adventure Awaits!");
     console.log("☀️ Sunny Start: Initializing...");
     await loadChores();
     await loadHistory();
