@@ -31,8 +31,10 @@ const REWARDS = [
 
 // Initialization
 async function init() {
+    console.log("☀️ Sunny Start: Initializing...");
     await loadChores();
     await loadHistory();
+    console.log("☀️ Sunny Start: Chores and History loaded.");
     loadJoke(); // Pre-load joke
     showSetup();
 
@@ -85,15 +87,17 @@ async function loadHistory() {
 }
 
 async function loadJoke() {
+    console.log("🃏 Joke: Requesting...");
     const data = await apiFetch('/joke');
     if (data && data.joke) {
         STATE.currentJoke = data.joke;
-        console.log("Joke loaded:", STATE.currentJoke);
+        console.log("🃏 Joke loaded:", STATE.currentJoke);
     } else {
-        console.warn("Joke fetch failed or empty:", data);
+        console.warn("🃏 Joke fetch failed or empty:", data);
         STATE.currentJoke = "You're a superstar! 🌟";
     }
 }
+
 
 
 
@@ -243,6 +247,9 @@ async function startQuest() {
         jokeText.innerText = STATE.currentJoke || "Ready for a great day?";
         jokeContainer.classList.remove('hidden');
     }
+
+    // In case pre-load failed
+    if (!STATE.currentJoke) loadJoke();
 }
 
 function renderQuest() {
