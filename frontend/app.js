@@ -289,13 +289,14 @@ async function finishQuest() {
     const s = delta % 60;
     const timeStr = `${m}m ${s}s`;
 
+    const gifUrl = REWARDS[Math.floor(Math.random() * REWARDS.length)];
     document.getElementById('reward-gif').src = gifUrl;
     document.getElementById('final-time').innerText = timeStr;
 
     // Show joke on victory if not already shown
     const victoryJoke = document.getElementById('victory-joke');
-    if (STATE.currentJoke && victoryJoke) {
-        victoryJoke.innerText = STATE.currentJoke;
+    if (victoryJoke) {
+        victoryJoke.innerText = STATE.currentJoke || "Great job today! You are awesome! ☀️";
     }
 
     // Save history to backend
