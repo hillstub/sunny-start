@@ -3,7 +3,9 @@ const STATE = {
     chores: [],
     startTime: null,
     timerInterval: null,
-    history: []
+    history: [],
+    currentJoke: null,
+    chart: null
 };
 
 // DOM Elements
@@ -77,6 +79,14 @@ async function loadHistory() {
     }
 }
 
+async function loadJoke() {
+    const data = await apiFetch('/joke');
+    if (data) {
+        STATE.currentJoke = data.joke;
+    }
+}
+
+
 async function addChore() {
     const text = newChoreInput.value.trim();
     if (!text) return;
@@ -132,7 +142,61 @@ function renderSetup() {
             });
         }
     }
+
+    renderHistoryChart();
 }
+
+function renderHistoryChart() {
+    const ctx = document.getElementById('history-chart');
+    if (!ctx || STATE.history.length === 0) return;
+
+    // Sort history by date ascending for the graph
+    const chartData = [...STATE.history].sort((a, b) => a.date - b.date).slice(-7); // Last 7 days
+
+    const labels = chartData.map(entry => new Date(entry.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }));
+    const data = chartData.map(entry => entry.time);
+
+    if (STATE.chart) {
+        STATE.chart.destroy();
+    }
+
+    STATE.chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Time (seconds)',
+                data: data,
+                borderColor: '#4361EE',
+                backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#F72585',
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            const m = Math.floor(value / 60);
+                            const s = value % 60;
+                            return m > 0 ? `${m}m` : `${s}s`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
 
 // Logic: Screen Navigation
 function switchScreen(screenName) {
@@ -149,7 +213,7 @@ async function showSetup() {
 }
 
 // Logic: Active Quest
-function startQuest() {
+async function startQuest() {
     if (STATE.chores.length === 0) {
         alert("Add some chores first!");
         return;
@@ -161,6 +225,15 @@ function startQuest() {
     startTimer();
     renderQuest();
     switchScreen('quest');
+
+    // Display joke during mission
+    await loadJoke();
+    const jokeContainer = document.getElementById('joke-container');
+    const jokeText = document.getElementById('mission-joke');
+    if (STATE.currentJoke && jokeContainer && jokeText) {
+        jokeText.innerText = STATE.currentJoke;
+        jokeContainer.classList.remove('hidden');
+    }
 }
 
 function renderQuest() {
@@ -216,9 +289,14 @@ async function finishQuest() {
     const s = delta % 60;
     const timeStr = `${m}m ${s}s`;
 
-    const gifUrl = REWARDS[Math.floor(Math.random() * REWARDS.length)];
     document.getElementById('reward-gif').src = gifUrl;
     document.getElementById('final-time').innerText = timeStr;
+
+    // Show joke on victory if not already shown
+    const victoryJoke = document.getElementById('victory-joke');
+    if (STATE.currentJoke && victoryJoke) {
+        victoryJoke.innerText = STATE.currentJoke;
+    }
 
     // Save history to backend
     await apiFetch('/history', {

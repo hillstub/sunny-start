@@ -12,47 +12,88 @@ services:
       OAUTH2_PROXY_COOKIE_SECURE: "false" # Set to true in production with HTTPS
       OAUTH2_PROXY_UPSTREAMS: "http://frontend:80"
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
-      OAUTH2_PROXY_REDIRECT_URL: http://localhost:4180/oauth2/callback
-      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_REDIRECT_URL: https://${DOMAIN}/oauth2/callback
+      OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/authenticated-emails.txt
+
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sunnystart-oauth.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.sunnystart-oauth.entrypoints=websecure"
+      - "traefik.http.routers.sunnystart-oauth.tls.certresolver=letsencrypt"
+      - "traefik.http.services.sunnystart-oauth.loadbalancer.server.port=4180"
+    configs:
+      - source: authenticated_emails_file
+        target: /etc/oauth2-proxy/authenticated-emails.txt
+        mode: 0444
     ports:
       - "4180:4180"
     networks:
       - internal
+      - dokploy-network
     depends_on:
       - frontend
     restart: unless-stopped
 
   # Frontend - Static files served via Nginx
   frontend:
-    build: ./frontend
+    image: ghcr.io/hillstub/sunny-start-frontend:latest
     networks:
       - internal
     depends_on:
       backend:
         condition: service_healthy
     restart: unless-stopped
-
+    labels:
+      - "traefik.enable=false"  # Not exposed directly, only via frontend proxy
+  
   # Backend - Node.js Express API
   backend:
-    build: ./backend
+    image: ghcr.io/hillstub/sunny-start-backend:latest
     environment:
       - DATABASE_URL=/app/data/sunny_start.db
       - PORT=8000
+      - JOKES_FILE_PATH=/app/data/jokes.txt
     volumes:
       - sunny_data:/app/data
     networks:
       - internal
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 10s
       timeout: 5s
       retries: 5
+    labels:
+      - "traefik.enable=false"  # Not exposed directly, only via frontend proxy
+    configs:
+      - source: jokes_file
+        target: /app/data/jokes.txt
+        mode: 0444
 
 networks:
+  dokploy-network:
+    external: true  # Dokploy's Traefik network
   internal:
     driver: bridge
-
+    
+configs:
+  authenticated_emails_file:
+    content: |
+      email1@host.com
+      email2@host.com
+  jokes_file:
+    content: |
+      Why did the sun go to school? To get brighter! ☀️
+      What do you call a snowman with a six pack? An abdominal snowman! ⛄
+      Why don't scientists trust atoms? Because they make up everything! ⚛️
+      What do you call a fake noodle? An impasta! 🍝
+      Why did the skeleton go to the dance? Because he had no body to go with! 💀
+      How does a penguin build its house? Igloos it together! 🐧
+      What do you call a bear with no teeth? A gummy bear! 🐻
+  
 volumes:
   sunny_data:
     driver: local

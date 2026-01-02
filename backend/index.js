@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -79,6 +80,23 @@ app.post('/api/history', (req, res) => {
         else res.json({ success: true });
     });
 });
+
+app.get('/api/joke', (req, res) => {
+    const jokePath = process.env.JOKES_FILE_PATH || '/app/data/jokes.txt';
+    fs.readFile(jokePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading jokes file:', err);
+            return res.json({ joke: "Why did the sun go to school? To get brighter! ☀️" });
+        }
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+        if (lines.length === 0) {
+            return res.json({ joke: "You're doing great! Keep it up! 🚀" });
+        }
+        const randomJoke = lines[Math.floor(Math.random() * lines.length)];
+        res.json({ joke: randomJoke });
+    });
+});
+
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 

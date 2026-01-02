@@ -311,6 +311,15 @@ button:active {
     letter-spacing: 1px;
 }
 
+.chart-container {
+    width: 100%;
+    margin-bottom: var(--gap-md);
+    background: white;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid #eee;
+}
+
 .history-list {
     list-style: none;
     display: flex;
@@ -327,4 +336,38 @@ button:active {
     font-size: 1rem;
     color: #555;
     border: 1px solid #eee;
+}
+
+/* Joke Card */
+.joke-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+    color: white;
+    font-style: italic;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.joke-card h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: #FFD166;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
