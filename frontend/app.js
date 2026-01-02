@@ -33,6 +33,7 @@ const REWARDS = [
 async function init() {
     await loadChores();
     await loadHistory();
+    loadJoke(); // Pre-load joke
     showSetup();
 
     // Event Listeners
@@ -81,10 +82,15 @@ async function loadHistory() {
 
 async function loadJoke() {
     const data = await apiFetch('/joke');
-    if (data) {
+    if (data && data.joke) {
         STATE.currentJoke = data.joke;
+        console.log("Joke loaded:", STATE.currentJoke);
+    } else {
+        console.warn("Joke fetch failed or empty:", data);
+        STATE.currentJoke = "You're a superstar! 🌟";
     }
 }
+
 
 
 async function addChore() {
@@ -227,11 +233,10 @@ async function startQuest() {
     switchScreen('quest');
 
     // Display joke during mission
-    await loadJoke();
     const jokeContainer = document.getElementById('joke-container');
     const jokeText = document.getElementById('mission-joke');
-    if (STATE.currentJoke && jokeContainer && jokeText) {
-        jokeText.innerText = STATE.currentJoke;
+    if (jokeContainer && jokeText) {
+        jokeText.innerText = STATE.currentJoke || "Ready for a great day?";
         jokeContainer.classList.remove('hidden');
     }
 }
