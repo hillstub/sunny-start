@@ -281,6 +281,27 @@ button:active {
     object-fit: cover;
 }
 
+.emoji-reward {
+    font-size: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
 .stats {
     background: #f0f7ff;
     padding: 1.5rem;

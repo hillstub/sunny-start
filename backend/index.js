@@ -97,6 +97,23 @@ app.get('/api/joke', (req, res) => {
     });
 });
 
+// Reward GIF endpoint - reads from configurable file
+app.get('/api/reward', (req, res) => {
+    const rewardPath = process.env.REWARDS_FILE_PATH || '/app/data/rewards.txt';
+    fs.readFile(rewardPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error('Error reading rewards file:', err);
+            return res.json({ url: null }); // Frontend will use emoji fallback
+        }
+        const lines = data.split('\n').filter(line => line.trim() !== '');
+        if (lines.length === 0) {
+            return res.json({ url: null });
+        }
+        const randomUrl = lines[Math.floor(Math.random() * lines.length)];
+        res.json({ url: randomUrl });
+    });
+});
+
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 

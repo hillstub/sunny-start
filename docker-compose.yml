@@ -60,6 +60,7 @@ services:
       - DATABASE_URL=/app/data/sunny_start.db
       - PORT=8000
       - JOKES_FILE_PATH=/app/data/jokes.txt
+      - REWARDS_FILE_PATH=/app/data/rewards.txt
     volumes:
       - sunny_data:/app/data
     networks:
@@ -71,10 +72,13 @@ services:
       timeout: 5s
       retries: 5
     labels:
-      - "traefik.enable=false"  # Not exposed directly, only via frontend proxy
+      - "traefik.enable=false"
     configs:
       - source: jokes_file
         target: /app/data/jokes.txt
+        mode: 0444
+      - source: rewards_file
+        target: /app/data/rewards.txt
         mode: 0444
 
 networks:
@@ -97,6 +101,12 @@ configs:
       Why did the skeleton go to the dance? Because he had no body to go with! 💀
       How does a penguin build its house? Igloos it together! 🐧
       What do you call a bear with no teeth? A gummy bear! 🐻
+  rewards_file:
+    content: |
+      https://media.tenor.com/images/5d39aa4b7b86a927fc2e5c8a34b06e7a/tenor.gif
+      https://media.tenor.com/images/54e5c5c78484f4bce8e6e3e0e9a1b2b4/tenor.gif
+      https://i.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif
+      https://i.giphy.com/media/3oz8xAFtqoOUUrqPkE/giphy.gif
   
 volumes:
   sunny_data:

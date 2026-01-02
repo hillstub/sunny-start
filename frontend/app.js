@@ -20,23 +20,15 @@ const questList = document.getElementById('quest-list');
 const newChoreInput = document.getElementById('new-chore-input');
 const questTimer = document.getElementById('quest-timer');
 
-// Mock Rewards (Direct GIF links)
-const REWARDS = [
-    'https://i.giphy.com/media/l0HlHFRbmaZtBRhXG/giphy.webp', // Minions
-    'https://i.giphy.com/media/3oz8xAFtqoOUUrqPkE/giphy.webp', // Success
-    'https://i.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.webp', // Dancing
-    'https://i.giphy.com/media/dkGhBWE3SyzXW/giphy.webp', // Snoopy
-    'https://i.giphy.com/media/ely3apHakzB6g/giphy.webp' // Puppy
-];
+// Reward URL - loaded from backend
+let currentRewardUrl = null;
 
 // Initialization
 async function init() {
-    console.log("☀️ Sunny Start: v1.3 - Adventure Awaits!");
-    console.log("☀️ Sunny Start: Initializing...");
     await loadChores();
     await loadHistory();
-    console.log("☀️ Sunny Start: Chores and History loaded.");
-    loadJoke(); // Pre-load joke
+    loadJoke();
+    loadReward();
     showSetup();
 
     // Event Listeners
@@ -88,16 +80,23 @@ async function loadHistory() {
 }
 
 async function loadJoke() {
-    console.log("🃏 Joke: Requesting...");
     const data = await apiFetch('/joke');
     if (data && data.joke) {
         STATE.currentJoke = data.joke;
-        console.log("🃏 Joke loaded:", STATE.currentJoke);
     } else {
-        console.warn("🃏 Joke fetch failed or empty:", data);
         STATE.currentJoke = "You're a superstar! 🌟";
     }
 }
+
+async function loadReward() {
+    const data = await apiFetch('/reward');
+    if (data && data.url) {
+        currentRewardUrl = data.url;
+    } else {
+        currentRewardUrl = null;
+    }
+}
+
 
 
 
@@ -306,9 +305,22 @@ async function finishQuest() {
     const s = delta % 60;
     const timeStr = `${m}m ${s}s`;
 
-    const gifUrl = REWARDS[Math.floor(Math.random() * REWARDS.length)];
-    document.getElementById('reward-gif').src = gifUrl;
+    const gifUrl = currentRewardUrl;
+    const rewardImg = document.getElementById('reward-gif');
+
+    rewardImg.onerror = () => {
+        rewardImg.style.display = 'none';
+        rewardImg.parentElement.innerHTML = '<div class="emoji-reward">🎉🌟🏆</div>';
+    };
+    if (gifUrl) {
+        rewardImg.src = gifUrl;
+    } else {
+        rewardImg.onerror();
+    }
     document.getElementById('final-time').innerText = timeStr;
+
+    // Load next reward for next time
+    loadReward();
 
     // Show joke on victory if not already shown
     const victoryJoke = document.getElementById('victory-joke');
