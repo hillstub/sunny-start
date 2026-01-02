@@ -9,11 +9,14 @@ services:
       OAUTH2_PROXY_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       OAUTH2_PROXY_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       OAUTH2_PROXY_COOKIE_SECRET: ${COOKIE_SECRET}
-      OAUTH2_PROXY_COOKIE_SECURE: "false" # Set to true in production with HTTPS
+      OAUTH2_PROXY_COOKIE_SECURE: "true" # Essential for HTTPS
       OAUTH2_PROXY_UPSTREAMS: "http://frontend:80"
       OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
       OAUTH2_PROXY_REDIRECT_URL: https://${DOMAIN}/oauth2/callback
       OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /etc/oauth2-proxy/authenticated-emails.txt
+      
+      # Allow PWA assets and manifest to be fetched without authentication
+      OAUTH2_PROXY_SKIP_AUTH_REGEX: "^/manifest.json$$|^/sw.js$$|^/icon.png$$|^/favicon.ico$$"
 
       OAUTH2_PROXY_REVERSE_PROXY: "true"
       OAUTH2_PROXY_SET_XAUTHREQUEST: "true"

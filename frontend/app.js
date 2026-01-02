@@ -51,13 +51,17 @@ async function init() {
 async function apiFetch(endpoint, options = {}) {
     try {
         const response = await fetch(`/api${endpoint}`, {
+            credentials: 'include', // Ensure cookies are sent even if routing is tricky
             ...options,
             headers: {
                 'Content-Type': 'application/json',
                 ...options.headers
             }
         });
-        if (!response.ok) throw new Error('API Error');
+        if (!response.ok) {
+            console.error(`API Error ${response.status}:`, endpoint);
+            throw new Error(`API Error ${response.status}`);
+        }
         return await response.json();
     } catch (err) {
         console.error('Fetch Error:', err);
