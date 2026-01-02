@@ -1,0 +1,330 @@
+:root {
+    /* Color Palette - Cyber/Super Hero Theme */
+    --primary-blue: #4361EE;
+    --primary-dark: #3A0CA3;
+    --accent-orange: #F72585;
+    --success-green: #4CC9F0;
+    --bg-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-dark: #2B2D42;
+    --text-light: #EDF2F4;
+
+    /* Spacing */
+    --gap-sm: 0.5rem;
+    --gap-md: 1rem;
+    --gap-lg: 2rem;
+
+    /* Effects */
+    --shadow-pop: 0 10px 20px rgba(0, 0, 0, 0.2);
+    --radius-lg: 24px;
+    --radius-md: 12px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--gap-md);
+    overflow-x: hidden;
+}
+
+#app {
+    width: 100%;
+    max-width: 600px;
+    min-height: 80vh;
+    position: relative;
+}
+
+.screen {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    padding: var(--gap-lg);
+    box-shadow: var(--shadow-pop);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h1 {
+    font-weight: 900;
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+h2 {
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+p {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    font-family: inherit;
+    border: none;
+    transition: transform 0.1s, filter 0.2s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: var(--primary-blue);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 900;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+    text-transform: uppercase;
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: #888;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    margin-top: auto;
+}
+
+/* Setup Screen */
+.input-group {
+    display: flex;
+    gap: var(--gap-sm);
+}
+
+#new-chore-input {
+    flex: 1;
+    padding: 1rem;
+    border: 3px solid #eee;
+    border-radius: var(--radius-md);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+#new-chore-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+#add-chore-btn {
+    padding: 0 1.5rem;
+    background: var(--accent-orange);
+    color: white;
+    border-radius: var(--radius-md);
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.chore-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+}
+
+.setup-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: var(--radius-md);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.delete-btn {
+    background: #ffcccc;
+    color: #d00000;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Quest Screen */
+.quest-header {
+    text-align: center;
+}
+
+.timer-display {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--primary-blue);
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.5rem;
+}
+
+.quest-grid {
+    display: grid;
+    gap: var(--gap-md);
+}
+
+.quest-item {
+    background: white;
+    border: 3px solid #eee;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.quest-item:hover {
+    border-color: var(--primary-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.quest-item.completed {
+    background: var(--success-green);
+    border-color: var(--success-green);
+    color: white;
+}
+
+.quest-item.completed .checkbox {
+    background: white;
+    color: var(--success-green);
+}
+
+.checkbox {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: white;
+    color: white;
+    transition: all 0.2s;
+}
+
+.quest-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+/* Victory Screen */
+.victory-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-md);
+}
+
+#reward-container {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    aspect-ratio: 1;
+    /* Keep it square-ish */
+    background: #eee;
+}
+
+#reward-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.stats {
+    background: #f0f7ff;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    width: 100%;
+}
+
+#final-time {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--primary-dark);
+    display: block;
+}
+
+/* History Section */
+.history-section {
+    margin-top: var(--gap-lg);
+    border-top: 2px dashed #eee;
+    padding-top: var(--gap-md);
+}
+
+.history-section h3 {
+    text-align: center;
+    color: #888;
+    margin-bottom: var(--gap-sm);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.history-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+    background: white;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: #555;
+    border: 1px solid #eee;
+}

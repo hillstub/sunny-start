@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunny Start!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- PWA / Mobile Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SunnyStart">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4361EE">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Setup Screen -->
+        <section id="setup-screen" class="screen hidden">
+            <h1>☀️ Sunny Start</h1>
+            <p>Parent Controls: Prepare the morning missions!</p>
+
+            <div class="input-group">
+                <input type="text" id="new-chore-input" placeholder="Add a new mission..." autocomplete="off">
+                <button id="add-chore-btn">Add</button>
+            </div>
+
+            <ul id="setup-chore-list" class="chore-list">
+                <!-- Setup items injected here -->
+            </ul>
+
+            <div class="actions">
+                <button id="start-quest-btn" class="primary-btn">🚀 Start Adventure!</button>
+            </div>
+
+            <div class="history-section">
+                <h3>📜 Adventure Log</h3>
+                <ul id="history-list" class="history-list"></ul>
+            </div>
+        </section>
+
+        <!-- Quest Screen -->
+        <section id="quest-screen" class="screen hidden">
+            <header class="quest-header">
+                <div class="timer-display">
+                    <span id="quest-timer">00:00</span>
+                </div>
+                <h2>Today's Missions</h2>
+            </header>
+
+            <div id="quest-list" class="quest-grid">
+                <!-- Active chores injected here -->
+            </div>
+
+            <div class="actions">
+                <button id="abort-btn" class="secondary-btn">⚙️ Setup</button>
+            </div>
+        </section>
+
+        <!-- Victory Screen -->
+        <section id="victory-screen" class="screen hidden">
+            <div class="victory-content">
+                <h1>☀️ DAY STARTED! 🎉</h1>
+                <div id="reward-container">
+                    <img id="reward-gif" src="" alt="Reward">
+                </div>
+                <div class="stats">
+                    <p>Total Time: <span id="final-time">00:00</span></p>
+                    <p id="best-time-msg">High Score! 🏆</p>
+                </div>
+                <button id="restart-btn" class="primary-btn">New Adventure 🔄</button>
+            </div>
+        </section>
+    </div>
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered'))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

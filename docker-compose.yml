@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  # OAuth2 Proxy - Authentication gateway
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    environment:
+      OAUTH2_PROXY_PROVIDER: google
+      OAUTH2_PROXY_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      OAUTH2_PROXY_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      OAUTH2_PROXY_COOKIE_SECRET: ${COOKIE_SECRET}
+      OAUTH2_PROXY_COOKIE_SECURE: "false" # Set to true in production with HTTPS
+      OAUTH2_PROXY_UPSTREAMS: "http://frontend:80"
+      OAUTH2_PROXY_HTTP_ADDRESS: "0.0.0.0:4180"
+      OAUTH2_PROXY_REDIRECT_URL: http://localhost:4180/oauth2/callback
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+    ports:
+      - "4180:4180"
+    networks:
+      - internal
+    depends_on:
+      - frontend
+    restart: unless-stopped
+
+  # Frontend - Static files served via Nginx
+  frontend:
+    build: ./frontend
+    networks:
+      - internal
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Backend - Node.js Express API
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_URL=/app/data/sunny_start.db
+      - PORT=8000
+    volumes:
+      - sunny_data:/app/data
+    networks:
+      - internal
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  sunny_data:
+    driver: local
