@@ -16,8 +16,8 @@ app.use(bodyParser.json());
 // Debug Middleware: Log Auth Headers
 app.use((req, res, next) => {
     if (req.url === '/api/health') return next(); // Skip logging for healthcheck
-    console.log(`[Request] ${req.method} ${req.url}`);
-    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    const email = req.headers['x-forwarded-email'] || req.headers['x-auth-request-email'];
+    console.log(`[Request] ${req.method} ${req.url} | Email: ${email || 'MISSING (defaulting to dev@local)'}`);
     next();
 });
 
@@ -43,8 +43,8 @@ db.serialize(() => {
     )`);
 });
 
-// Auth Helper: Get user email from OAuth2 Proxy header
-const getUserEmail = (req) => req.headers['x-auth-request-email'] || 'dev@local';
+// Auth Helper: Get user email from headers (prioritize x-forwarded-email based on env)
+const getUserEmail = (req) => req.headers['x-forwarded-email'] || req.headers['x-auth-request-email'] || 'dev@local';
 
 // API Endpoints
 app.get('/api/chores', (req, res) => {
