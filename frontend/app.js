@@ -240,13 +240,13 @@ async function startQuest() {
     renderQuest();
     switchScreen('quest');
 
-    // Display joke during mission
-    const jokeContainer = document.getElementById('joke-container');
-    const jokeText = document.getElementById('mission-joke');
-    if (jokeContainer && jokeText) {
-        jokeText.innerText = STATE.currentJoke || "Ready for a great day?";
-        jokeContainer.classList.remove('hidden');
-    }
+    // Joke is now hidden during quest, only shown on victory
+    // const jokeContainer = document.getElementById('joke-container');
+    // const jokeText = document.getElementById('mission-joke');
+    // if (jokeContainer && jokeText) {
+    //     jokeText.innerText = STATE.currentJoke || "Ready for a great day?";
+    //     jokeContainer.classList.remove('hidden');
+    // }
 
     // In case pre-load failed
     if (!STATE.currentJoke) loadJoke();
@@ -325,7 +325,8 @@ async function finishQuest() {
     // Show joke on victory if not already shown
     const victoryJoke = document.getElementById('victory-joke');
     if (victoryJoke) {
-        victoryJoke.innerText = STATE.currentJoke || "Great job today! You are awesome! ☀️";
+        // Use innerHTML to support <br /> tags for formatting
+        victoryJoke.innerHTML = STATE.currentJoke || "Great job today! You are awesome! ☀️";
     }
 
     // Save history to backend
