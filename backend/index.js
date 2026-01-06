@@ -15,8 +15,9 @@ app.use(bodyParser.json());
 
 // Debug Middleware: Log Auth Headers
 app.use((req, res, next) => {
-    const email = req.headers['x-auth-request-email'];
-    console.log(`[Request] ${req.method} ${req.url} | Email: ${email || 'MISSING (defaulting to dev@local)'}`);
+    if (req.url === '/api/health') return next(); // Skip logging for healthcheck
+    console.log(`[Request] ${req.method} ${req.url}`);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
     next();
 });
 
