@@ -13,6 +13,13 @@ const DB_PATH = process.env.DATABASE_URL || path.join(__dirname, 'data', 'sunny_
 app.use(cors());
 app.use(bodyParser.json());
 
+// Debug Middleware: Log Auth Headers
+app.use((req, res, next) => {
+    const email = req.headers['x-auth-request-email'];
+    console.log(`[Request] ${req.method} ${req.url} | Email: ${email || 'MISSING (defaulting to dev@local)'}`);
+    next();
+});
+
 // SQLite Database Setup
 const db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) console.error('Database connection error:', err.message);
